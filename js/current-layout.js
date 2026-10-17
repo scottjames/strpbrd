@@ -33,10 +33,9 @@ export const setCurrentLayout = (key, value, undo = null) => {
       updateLayoutInfo();
     }
  
-    // If change made when back in history, delete history.
+    // If change made when back in history, drop the redo steps after this point (keep the undo steps).
     if(historyIndex + 1 != layoutHistory.length) {
-      layoutHistory = [];
-      historyIndex = -1;
+      layoutHistory = layoutHistory.slice(0, historyIndex + 1);
     }
 
     // Push current layout into history.
@@ -49,7 +48,8 @@ export const setCurrentLayout = (key, value, undo = null) => {
 export const undo = () => {
   if(historyIndex > 0) {
     historyIndex--;
-    setCurrentLayout("all", layoutHistory[historyIndex], true);
+    // Copy, so later edits to the current layout don't change the saved history entry.
+    setCurrentLayout("all", JSON.parse(JSON.stringify(layoutHistory[historyIndex])), true);
     getCurrentLayout();
   } else {
     alert("Nothing to undo!");
@@ -59,7 +59,7 @@ export const undo = () => {
 export const redo = () => {
   if(layoutHistory.length - 1 > historyIndex) {
     historyIndex++;
-    setCurrentLayout("all", layoutHistory[historyIndex], false);
+    setCurrentLayout("all", JSON.parse(JSON.stringify(layoutHistory[historyIndex])), false);
     getCurrentLayout();
   } else {
     alert("Nothing to redo!");

@@ -1,7 +1,7 @@
 # TODO — bugs found in code read-through (2026-10-16)
 
 1. ~~**Scale select breaks zoom** — [quick-tools.js:55](../js/quick-tools.js#L55) `setScaleIndex(event.target.value)` stores a string; later wheel zoom does `"3" + 1 = "31"` → `scales["31"]` is `undefined`.~~ ✅ fixed 2026-10-17 — wrapped in `Number(...)`.
-2. **Undo history wiped** — any edit after an undo clears the entire history ([current-layout.js:37-40](../js/current-layout.js#L37-L40)) instead of truncating to `historyIndex + 1`.
+2. ~~**Undo history wiped** — any edit after an undo cleared the entire history instead of truncating to `historyIndex + 1`.~~ ✅ fixed 2026-10-17 — now drops only the redo steps (`slice(0, historyIndex + 1)`). Also `undo`/`redo` now restore a copy of the history entry; they used the entry itself as the live layout, so the next edit overwrote that saved step.
 3. **Move + Escape deletes the component** — [move-component.js](../js/move-component.js) removes it from the layout (and commits to history) before the ghost is placed.
 4. **Falsy layout values lost** — `getCurrentLayout(key)` returns `undefined` for `perf: false` / `0`. Loading a layout sets the perf checkbox's `.value` instead of `.checked`.
 5. **Shared option objects mutated** — resistor, diode, inductor, LED, wire, potentiometer `getOptions` mutate the module-level defaults instead of a deep copy (e.g. 1/4W resistor keeps pitch default 6 after selecting 1/2W). Resistor 1/2W pitch list contains `10` twice.
@@ -31,3 +31,4 @@
     - Wrap storage access in try/catch. `localStorage` can be unavailable (private mode) or full (~5 MB), so show an alert rather than failing silently.
     - Nice to have: delete a saved layout from the list.
     - Note: local storage is per browser and per site (localhost vs the GitHub Pages site are separate), so file save stays the way to move or back up layouts.
+17. **Loading a layout keeps the old undo history** — `loadCurrentLayout` in `js/current-layout.js` replaces `currentLayout` but leaves `layoutHistory`/`historyIndex` alone. After loading a file, Ctrl+Z steps back into the previous layout's edits, mixing the two. Fix: reset history to a single entry (a copy of the loaded layout, `historyIndex = 0`) inside `loadCurrentLayout`. Applies to item 16's local-storage load too, if that reuses `loadCurrentLayout`.
