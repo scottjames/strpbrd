@@ -15,6 +15,16 @@ A live demo of STRPBRD can be accessed [here](https://hudsonics.github.io/strpbr
 ## Dependencies
 The only dependency is [paper.js](http://paperjs.org/), which is used for rendering graphics to the webpage.
 
+## Development
+STRPBRD uses ES modules, so it must be served over HTTP rather than opened as a file. To run a local server with live reload:
+
+```
+npm install
+npm run dev
+```
+
+Then open http://localhost:3000. Saving a JS/HTML file reloads the page; CSS changes are injected without a reload. Note that a reload resets the current layout, so save it first if needed.
+
 ## Roadmap
 * Continue to expand the component library
 * Improve performance for large designs
