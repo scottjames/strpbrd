@@ -82,13 +82,25 @@ export const getCapacitorOptions = (currentOptions) => {
       updatedCapacitorOptions.pitch.options = [2, 3];
       updatedCapacitorOptions.pitch.defaultValue = 3;
     }
+  } else if (currentOptions.capacitorType == "Axial") {
+    // Change "width" property to "diameter", while retaining order.
+    updatedCapacitorOptions.width = {
+      type: "select",
+      label: "Diameter (mm)",
+      options: [3, 4, 5, 6.3, 8],
+      defaultValue: 4
+    }
+
+    // Leads come out of each end, so body needs a longer pitch than Disc/Rect.
+    updatedCapacitorOptions.pitch.options = [4, 5, 6, 7, 8, 9, 10];
+    updatedCapacitorOptions.pitch.defaultValue = 5;
   }
   return updatedCapacitorOptions;
 }
 
 export const getCapacitorBOMLine = (component) => {
   let footprint = component.capacitorType + ", ";
-  if(component.capacitorType == "Radial") {
+  if(component.capacitorType == "Radial" || component.capacitorType == "Axial") {
     footprint += component.width + "mm diameter, "
   } else if(component.capacitorType == "Disc/Rect") {
     footprint += component.width + "mm wide, "
@@ -318,6 +330,101 @@ export const drawCapacitor = (component) => {
     capacitorGroup.rotate(component.rotation);
 
     // Ref des label rotated independently from body.
+    capacitorGroup.addChild(refDesLabel);
+  } else if(component.capacitorType == "Axial") {
+    // Drawn like a flat resistor: leads out of each end of a cylindrical body.
+    const totalLength = (component.pitch - 1) * 2.54;
+    const bodyLength = totalLength - 2.54;
+    const bodyDiameter = Number(component.width);
+    const legLength = (totalLength - bodyLength) / 2;
+    const centralX = bodyDiameter / 2;
+
+    const legs = new Path({
+      segments: mmToPxSegments([[centralX, 0], [centralX, totalLength]]),
+      strokeColor: "grey",
+      strokeWidth: 1.75 * globalSettings.getCurrentScale(),
+      strokeCap: "round",
+      strokeJoin: "round"
+    })
+
+    const leg1 = new Shape.Circle({
+      center: mmToPxPoint([centralX, 0]),
+      radius: globalSettings.getHoleDiameter() * 0.51,
+      fillColor: "#333",
+      data: {
+        leg: true
+      }
+    })
+
+    const leg2 = new Shape.Circle({
+      center: mmToPxPoint([centralX, totalLength]),
+      radius: globalSettings.getHoleDiameter() * 0.51,
+      fillColor: "#333",
+      data: {
+        leg: true
+      }
+    })
+
+    const body = new Shape.Rectangle({
+      topLeft: mmToPxPoint([0, legLength]),
+      bottomRight: mmToPxPoint([bodyDiameter, legLength + bodyLength]),
+      radius: 5,
+      strokeColor: "#333",
+      strokeWidth: 0.1 * globalSettings.getCurrentScale(),
+      fillColor: capacitorColourLookup[component.colour]
+    });
+
+    capacitorGroup.addChild(legs);
+    capacitorGroup.addChild(body);
+    capacitorGroup.addChild(leg1);
+    capacitorGroup.addChild(leg2);
+
+    // Mark the positive (first) lead end of the body.
+    if(component.polarised == "Polarised") {
+      const polarityMarking = new PointText({
+        point: [0, 0],
+        content: "+",
+        fillColor: "black",
+        fontFamily: "monospace",
+        justification: "center",
+        fontSize: 3 * globalSettings.getCurrentScale() + "pt"
+      });
+
+      polarityMarking.position = mmToPxPoint([centralX, legLength + 1]);
+
+      capacitorGroup.addChild(polarityMarking);
+    }
+
+    if(component.hole) {
+      position = getHoleCoords(component.hole.row, component.hole.column);
+      if(component.rotation == 0 || component.rotation == 180) {
+        position.y = position.y + mmToPx(totalLength / 2);
+      } else {
+        position.x = position.x + mmToPx(totalLength / 2);
+      }
+    }
+
+    capacitorGroup.rotate(component.rotation, position);
+
+    // Add reference designator label - needs to be rotated independently.
+    const refDesLabel = new PointText({
+      point: [0, 0],
+      content: (component.refDes ? component.refDes : ""),
+      fillColor: "black",
+      fontFamily: "monospace",
+      justification: "center",
+      fontSize: component.refDesLabelSize * globalSettings.getCurrentScale() + "pt"
+    });
+
+    // Center reference designator label.
+    if(component.rotation == 0 || component.rotation == 180) {
+      refDesLabel.rotation = -90;
+      refDesLabel.point = [capacitorGroup.bounds.x + (capacitorGroup.bounds.width / 2) + (refDesLabel.bounds.width / 4), capacitorGroup.bounds.y + (capacitorGroup.bounds.height / 2)];
+    } else {
+      refDesLabel.rotation = 0;
+      refDesLabel.point = [capacitorGroup.bounds.x + (capacitorGroup.bounds.width / 2), capacitorGroup.bounds.y + (capacitorGroup.bounds.height / 2) + (refDesLabel.bounds.height / 4)];
+    }
+
     capacitorGroup.addChild(refDesLabel);
   }
 
