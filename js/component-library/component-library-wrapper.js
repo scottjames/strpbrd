@@ -99,7 +99,7 @@ export const componentLibrary = {
     draw: drawTO92,
     refDes: "Q",
     properName: "TO-92",
-    aliases: ["tranistor", "bjt", "mosfet", "jfet", "to-92"],
+    aliases: ["transistor", "bjt", "mosfet", "jfet", "to-92"],
     getTerminals: () => { return 3; },
     getOptions: getTO92Options,
     getBOMLine: getTO92BOMLine
@@ -108,7 +108,7 @@ export const componentLibrary = {
     draw: drawTO39,
     refDes: "Q",
     properName: "TO-39",
-    aliases: ["tranistor", "bjt", "mosfet", "jfet", "to-39"],
+    aliases: ["transistor", "bjt", "mosfet", "jfet", "to-39"],
     getTerminals: () => { return 3; },
     getOptions: getTO39Options,
     getBOMLine: getTO39BOMLine

@@ -81,7 +81,7 @@ const updateLayoutInfo = () => {
   if(getCurrentLayout("layoutName") != null) {
     layoutInfo.innerHTML += "<span style='font-weight: bold;'>" + getCurrentLayout("layoutName") + "</span>";
     if(getCurrentLayout("authorName") != null) {
-      layoutInfo.innerHTML += " by <span style='font-weight: bold;'>" + getCurrentLayout("authorName"); + "</span>";
+      layoutInfo.innerHTML += " by <span style='font-weight: bold;'>" + getCurrentLayout("authorName") + "</span>";
     } 
   }
 }
