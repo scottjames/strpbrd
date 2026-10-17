@@ -115,7 +115,19 @@ export const setupControls = () => {
         }
         break;
       }
+      case '?': {
+        // Open help, unless typing in a field or another dialog is already open.
+        if(!isTypingInField(event) && !document.querySelector("dialog[open]")) {
+          document.getElementById("help-dialog").showModal();
+        }
+        break;
+      }
       default: {}
     }
   }
+}
+
+// True when the key press is going into a form field, so single-key shortcuts shouldn't fire.
+const isTypingInField = (event) => {
+  return ["INPUT", "SELECT", "TEXTAREA"].includes(event.target.tagName);
 }
