@@ -39,6 +39,9 @@ export const drawBoard = () => {
   const workPosition = getWorkPosition();
   stripboardGroup.position.x = workPosition.x;
   stripboardGroup.position.y = workPosition.y;
+
+  // Dragging on the board itself pans the view (components sit on top, so dragging them doesn't pan).
+  const panBoard = (event) => { moveBoard(event.delta.x, event.delta.y); };
   
   // Draw substrate.
   const substrateCoords = getSubstrateCoords();
@@ -50,6 +53,7 @@ export const drawBoard = () => {
     strokeColor: "grey",
     fillColor: "beige"
   });
+  substrate.onMouseDrag = panBoard;
 
   stripboardGroup.addChild(substrate);  
   
@@ -79,6 +83,7 @@ export const drawBoard = () => {
           }
         }
       }
+      track.onMouseDrag = panBoard;
       stripboardGroup.addChild(track);
     }
      
@@ -91,6 +96,7 @@ export const drawBoard = () => {
         pad.fillColor = globalSettings.trackColour;
         pad.strokeWidth = 1;
         pad.strokeColor = "grey";
+        pad.onMouseDrag = panBoard;
         stripboardGroup.addChild(pad);
       }
 
@@ -99,6 +105,7 @@ export const drawBoard = () => {
       hole.strokeWidth = 1;
       hole.strokeColor = "black";
       hole.data = { className: "hole", id: ("hole-" + row + "-" + column) };
+      hole.onMouseDrag = panBoard;
       setHoles([...getHoles(), hole]);
       stripboardGroup.addChild(hole);
     }
@@ -109,10 +116,18 @@ export const moveBoard = (deltaX, deltaY) => {
   if(!getBoardLocked()) {
     stripboardGroup.position.x += deltaX;
     stripboardGroup.position.y += deltaY;
-    setWorkPosition({ 
-      x: stripboardGroup.position.x,
-      y: stripboardGroup.position.y
-    }, stripboardGroup.bounds);
+
+    // Shift the stored origin by the same delta - the group's bounds include substrate padding, so can't be used as the origin.
+    const workPosition = getWorkPosition();
+    setWorkPosition({
+      x: workPosition.x + deltaX,
+      y: workPosition.y + deltaY
+    }, {
+      topLeft: {
+        x: workPosition.bounds.topLeft.x + deltaX,
+        y: workPosition.bounds.topLeft.y + deltaY
+      }
+    });
   }
 }
 
