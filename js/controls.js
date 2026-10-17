@@ -11,7 +11,12 @@ import { moveComponent } from "./move-component.js";
 
 export const setupControls = () => {
   // Zoom on scroll.
-  window.addEventListener("wheel", (event) => { 
+  window.addEventListener("wheel", (event) => {
+    // Only zoom/pan when scrolling over the board - lets the sidebar and dialogs scroll normally.
+    if(event.target.id != "strpbrd") {
+      return;
+    }
+
     // If Y movement is negative, user has scrolled up.
     const scrollUp = event.deltaY < 0;
     if(scrollUp == true) {

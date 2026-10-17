@@ -13,3 +13,4 @@
    - ~~TO-92/TO-39 alias typo `"tranistor"` — searching "transistor" finds nothing.~~
    - ~~[index.html:90](../index.html#L90) GitHub link closes with `<a>` instead of `</a>`.~~
    - ~~[current-layout.js:84](../js/current-layout.js#L84) closing `</span>` is dead code after a semicolon.~~
+10. ~~**Sidebar buttons unreachable for large components** (e.g. 18-way DIP)~~ ✅ fixed 2026-10-17 — the window wheel handler in `controls.js` blocked sidebar scrolling (it zoomed instead), and the sidebar (100vh + padding) ran underneath the sticky footer, which covered its bottom. Wheel zoom now only applies over the canvas. The body is a flex column so the sidebar ends at the footer, and `calculateWorkCentre` no longer subtracts sidebar/footer sizes (the canvas used to be oversized).
