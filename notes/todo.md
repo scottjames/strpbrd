@@ -1,12 +1,12 @@
 # TODO — bugs found in code read-through (2026-10-16)
 
-1. **Scale select breaks zoom** — [quick-tools.js:55](../js/quick-tools.js#L55) `setScaleIndex(event.target.value)` stores a string; later wheel zoom does `"3" + 1 = "31"` → `scales["31"]` is `undefined`.
+1. ~~**Scale select breaks zoom** — [quick-tools.js:55](../js/quick-tools.js#L55) `setScaleIndex(event.target.value)` stores a string; later wheel zoom does `"3" + 1 = "31"` → `scales["31"]` is `undefined`.~~ ✅ fixed 2026-10-17 — wrapped in `Number(...)`.
 2. **Undo history wiped** — any edit after an undo clears the entire history ([current-layout.js:37-40](../js/current-layout.js#L37-L40)) instead of truncating to `historyIndex + 1`.
 3. **Move + Escape deletes the component** — [move-component.js](../js/move-component.js) removes it from the layout (and commits to history) before the ghost is placed.
 4. **Falsy layout values lost** — `getCurrentLayout(key)` returns `undefined` for `perf: false` / `0`. Loading a layout sets the perf checkbox's `.value` instead of `.checked`.
 5. **Shared option objects mutated** — resistor, diode, inductor, LED, wire, potentiometer `getOptions` mutate the module-level defaults instead of a deep copy (e.g. 1/4W resistor keeps pitch default 6 after selecting 1/2W). Resistor 1/2W pitch list contains `10` twice.
-6. **Capacitor issues** — Radial uses `if(component.polarised)` but the value is the string `"Non-polarised"` (truthy) → always shows "+". "Axial" option has no draw branch → empty group, hole detector crashes on `legs[0]`.
-7. **Diode BOM value always "-"** — `getDiodeBOMLine` reads `component.value`; the field is `partNumber`.
+6. **Capacitor issues** — ~~Radial uses `if(component.polarised)` but the value is the string `"Non-polarised"` (truthy) → always shows "+".~~ ✅ fixed 2026-10-17 (now `== "Polarised"`, like Disc/Rect). **Still open:** "Axial" option has no draw branch → empty group, hole detector crashes on `legs[0]`.
+7. ~~**Diode BOM value always "-"** — `getDiodeBOMLine` reads `component.value`; the field is `partNumber`.~~ ✅ fixed 2026-10-17
 8. ~~**Placement with no highlighted hole** — `getSelectedHoles()[0]` crashes, or reuses a stale hole from the previous placement (selected holes are never cleared).~~ ✅ fixed 2026-10-17 — new `clearSelectedHoles()` in `hole-detector.js` empties the list on every mousemove and when placement ends; clicking with no valid holes now does nothing.
 9. ~~**Minor**~~ ✅ fixed 2026-10-16
    - ~~Help dialog says Shift+C to duplicate; code uses Ctrl+C.~~ (help text now says Ctrl+C)

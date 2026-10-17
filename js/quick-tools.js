@@ -52,7 +52,7 @@ const scaleSelect = () => {
 
   select.onchange = (event) => {
     clearBoard();
-    setScaleIndex(event.target.value);
+    setScaleIndex(Number(event.target.value));
     drawBoard();
     drawComponents();
   }

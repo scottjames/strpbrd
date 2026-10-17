@@ -252,7 +252,7 @@ export const drawCapacitor = (component) => {
     capacitorGroup.addChild(leg2);
 
     let polarityMarking;
-    if(component.polarised) {
+    if(component.polarised == "Polarised") {
       polarityMarking = new PointText({
         point: [0, 0],
         content: "+",
@@ -291,7 +291,7 @@ export const drawCapacitor = (component) => {
       let polarityMarkingXOffset = 0;
       let polarityMarkingYOffset = 0; 
       
-      if(component.polarised) {
+      if(component.polarised == "Polarised") {
         // If the bounds of the polarity marking exceeds the bounds of the body, offset vertical position.  
         if(polarityMarking.bounds.top < body.bounds.top) {
           polarityMarkingYOffset = ((polarityMarking.bounds.top - body.bounds.top) / 2);
