@@ -7,7 +7,7 @@
 5. **Shared option objects mutated** — resistor, diode, inductor, LED, wire, potentiometer `getOptions` mutate the module-level defaults instead of a deep copy (e.g. 1/4W resistor keeps pitch default 6 after selecting 1/2W). Resistor 1/2W pitch list contains `10` twice.
 6. **Capacitor issues** — Radial uses `if(component.polarised)` but the value is the string `"Non-polarised"` (truthy) → always shows "+". "Axial" option has no draw branch → empty group, hole detector crashes on `legs[0]`.
 7. **Diode BOM value always "-"** — `getDiodeBOMLine` reads `component.value`; the field is `partNumber`.
-8. **Placement with no highlighted hole** — `getSelectedHoles()[0]` crashes, or reuses a stale hole from the previous placement (selected holes are never cleared).
+8. ~~**Placement with no highlighted hole** — `getSelectedHoles()[0]` crashes, or reuses a stale hole from the previous placement (selected holes are never cleared).~~ ✅ fixed 2026-10-17 — new `clearSelectedHoles()` in `hole-detector.js` empties the list on every mousemove and when placement ends; clicking with no valid holes now does nothing.
 9. ~~**Minor**~~ ✅ fixed 2026-10-16
    - ~~Help dialog says Shift+C to duplicate; code uses Ctrl+C.~~ (help text now says Ctrl+C)
    - ~~TO-92/TO-39 alias typo `"tranistor"` — searching "transistor" finds nothing.~~

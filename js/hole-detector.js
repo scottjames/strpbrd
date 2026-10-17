@@ -13,19 +13,23 @@ export const getSelectedHoles = () => {
   return selectedHoles;
 }
 
+// Remove highlighting from selected holes and forget them, so a stale position can't be used for placement.
+export const clearSelectedHoles = () => {
+  getSelectedHoles().forEach((hole) => {
+    hole.item.strokeColor = "black";
+    hole.item.strokeWidth = 1;
+  });
+  setSelectedHoles([]);
+}
+
 export const setupHoleDetector = () => {
   window.onmousemove = (event) => {
     // Only highlight holes if component is currently being placed.
     if(getComponentGhostState()) {
 
       document.body.style.cursor = "not-allowed";
-      
-      if(getSelectedHoles()) {
-        getSelectedHoles().forEach((hole) => {
-          hole.item.strokeColor = "black";
-          hole.item.strokeWidth = 1;
-        });
-      }
+
+      clearSelectedHoles();
 
       // Get all holes intersected by ghost component.
       const componentGhost = getComponentGhost();
