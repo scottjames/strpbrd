@@ -224,6 +224,17 @@ footer {
   margin-bottom: 0.5rem;
 }
 
+/* Keep dialog heading and close button visible while a long dialog (e.g. Help) scrolls.
+   Negative offsets cancel the dialog's 1rem padding so the header pins to the top edge. */
+.dialog-header {
+  position: sticky;
+  top: -1rem;
+  padding-top: 1rem;
+  margin-top: -1rem;
+  background: inherit;
+  z-index: 1;
+}
+
 .dialog-heading {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem; 
